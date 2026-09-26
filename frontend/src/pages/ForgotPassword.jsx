@@ -45,7 +45,7 @@ function ForgotPassword() {
 }
 
 export function BrandMark() {
-  return <div className="mb-5 flex justify-center"><Link to="/" aria-label="SmartProductivity home"><img src="/SmartProductivity%20logo.png" alt="SmartProductivity" className="h-12 w-40 rounded-lg bg-white object-contain" /></Link></div>;
+  return <div className="mb-5 flex justify-center"><Link to="/" aria-label="SmartProductivity home"><img src="/SmartProductivity%20logo.png" alt="SmartProductivity" className="h-14 w-44 rounded-lg bg-white object-contain" /></Link></div>;
 }
 
 export default ForgotPassword;

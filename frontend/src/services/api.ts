@@ -84,7 +84,7 @@ export const updateProfileAPI = (data: { name?: string; email?: string; password
 export const requestPasswordResetAPI = (email: string) => API.post<{ success: boolean; message: string }>("/auth/forgot-password", { email });
 export const resetPasswordAPI = (token: string | undefined, password: string) => API.post<{ success: boolean; message: string }>(`/auth/reset-password/${token}`, { password });
 export const verifyEmailAPI = (token: string | undefined) => API.post<{ success: boolean; message: string }>(`/auth/verify-email/${token}`);
-export const resendVerificationAPI = () => API.post<{ success: boolean; emailSent?: boolean; message: string }>("/auth/verify-email");
+export const resendVerificationAPI = () => API.post<{ success: boolean; emailSent?: boolean; verificationUrl?: string; message: string }>("/auth/verify-email");
 export const deleteAccountAPI = (password: string) => API.delete<{ success: boolean; message: string }>("/auth/account", { data: { password } });
 
 export const getTasksAPI = (params?: PageQuery) => API.get<TaskRecord[] | { items: TaskRecord[]; pagination: unknown }>("/tasks", { params });

@@ -22,7 +22,7 @@ function Navbar() {
 
   const handleLogout = () => {
     dispatch(signOut());
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -35,7 +35,7 @@ function Navbar() {
         <img
           src="/SmartProductivity%20logo.png"
           alt="SmartProductivity"
-          className="h-10 w-36 rounded-md bg-white object-contain"
+          className="h-12 w-40 rounded-md bg-white object-contain"
         />
       </Link>
 

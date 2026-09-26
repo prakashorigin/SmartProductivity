@@ -18,6 +18,7 @@ function Dashboard() {
   const [statsError, setStatsError] = useState("");
   const [verificationBusy, setVerificationBusy] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState("");
+  const [verificationUrl, setVerificationUrl] = useState("");
   const todayKey = dayKey(new Date());
 
   const loadOverview = useCallback(() => {
@@ -44,9 +45,11 @@ function Dashboard() {
   const resendVerification = async () => {
     setVerificationBusy(true);
     setVerificationMessage("");
+    setVerificationUrl("");
     try {
       const { data } = await resendVerificationAPI();
       setVerificationMessage(data.message);
+      setVerificationUrl(data.verificationUrl || "");
     } catch (error) {
       setVerificationMessage(error.response?.data?.message || "We couldn't send a verification link. Please try again.");
     } finally {
@@ -55,7 +58,7 @@ function Dashboard() {
   };
 
   return <section className="mx-auto max-w-7xl">
-    {user?.emailVerified === false && <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/60 dark:bg-amber-950/30 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><BellRing size={18} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true" /><div><p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Verify your email address</p><p role="status" className="mt-1 text-xs leading-5 text-amber-800 dark:text-amber-200">{verificationMessage || `Your email address (${user.email}) has not been verified. Request a new link if you can't find the message.`}</p></div></div><button type="button" onClick={resendVerification} disabled={verificationBusy} className="shrink-0 rounded-lg border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50 dark:border-amber-800 dark:text-amber-100 dark:hover:bg-amber-900/40">{verificationBusy ? "Sending…" : "Resend verification"}</button></div>}
+    {user?.emailVerified === false && <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/60 dark:bg-amber-950/30 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><BellRing size={18} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true" /><div><p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Verify your email address</p><p role="status" className="mt-1 text-xs leading-5 text-amber-800 dark:text-amber-200">{verificationMessage || `Your email address (${user.email}) isn't verified yet. Send a verification link to finish confirming it.`}</p>{verificationUrl && <a href={verificationUrl} className="mt-2 inline-block text-xs font-semibold text-indigo-700 underline dark:text-indigo-300">Open verification link</a>}</div></div><button type="button" onClick={resendVerification} disabled={verificationBusy} className="shrink-0 rounded-lg border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50 dark:border-amber-800 dark:text-amber-100 dark:hover:bg-amber-900/40">{verificationBusy ? "Sending…" : "Send verification link"}</button></div>}
 
     <header className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-medium text-indigo-600 dark:text-indigo-300">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p><h1 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">Welcome back, {user?.name || "there"}</h1><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">A clear plan makes it easier to get started.</p></div><div className="flex flex-wrap gap-2"><Link to="/tasks?create=1" className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white no-underline hover:bg-indigo-700"><ListPlus size={16} aria-hidden="true" /> Add task</Link><Link to="/pomodoro" className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 no-underline hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"><Timer size={16} aria-hidden="true" /> Start focus</Link><Link to="/projects?create=1" className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 no-underline hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"><FolderPlus size={16} aria-hidden="true" /> New project</Link><Link to="/analytics" className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 no-underline hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"><TrendingUp size={16} aria-hidden="true" /> Analytics</Link></div></header>
 

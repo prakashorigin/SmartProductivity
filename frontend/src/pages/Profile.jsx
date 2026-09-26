@@ -15,6 +15,7 @@ function Profile() {
   const [messageTone, setMessageTone] = useState("success");
   const [loading, setLoading] = useState(false);
   const [verificationBusy, setVerificationBusy] = useState(false);
+  const [verificationUrl, setVerificationUrl] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteMessage, setDeleteMessage] = useState("");
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -29,6 +30,7 @@ function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setVerificationUrl("");
     try {
       const updateData = { name: formName, email: formEmail };
       if (password) updateData.password = password;
@@ -53,10 +55,12 @@ function Profile() {
 
   const resendVerification = async () => {
     setVerificationBusy(true);
+    setVerificationUrl("");
     try {
       const { data } = await resendVerificationAPI();
       setMessageTone(data.emailSent === false ? "warning" : "success");
       setMessage(data.message);
+      setVerificationUrl(data.verificationUrl || "");
     } catch (error) {
       setMessageTone("error");
       setMessage(error.response?.data?.message || "We couldn't send a verification link. Please try again.");
@@ -117,6 +121,7 @@ function Profile() {
             className={`p-3 rounded-lg mb-4 text-sm text-center ${messageTone === "success" ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300" : messageTone === "warning" ? "bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200" : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"}`}
           >
             {message}
+            {verificationUrl && <div><a href={verificationUrl} className="mt-2 inline-block font-semibold underline">Open verification link</a></div>}
           </div>
         )}
 

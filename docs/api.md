@@ -15,7 +15,7 @@ Base URL in local development: `http://localhost:6000/api`. The Vite frontend pr
 | POST | `/auth/forgot-password` | Public | Always return a generic result to avoid email enumeration |
 | POST | `/auth/reset-password/:token` | Public | Use one-time token within 15 minutes |
 | POST | `/auth/verify-email/:token` | Public | Verify email using one-time token |
-| POST | `/auth/verify-email` | User | Resend a verification link |
+| POST | `/auth/verify-email` | User | Resend a verification link; returns a local-only verification URL in development when SMTP is unavailable |
 | DELETE | `/auth/account` | User | Confirm password, cancel known Stripe subscription, then remove account data |
 
 Account entry and reset actions have a 15-request per 15-minute per-IP limiter in addition to the API-wide limiter.

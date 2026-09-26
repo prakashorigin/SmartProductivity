@@ -39,6 +39,15 @@ const isDuplicateEmailError = (error: unknown) => typeof error === "object" && e
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 const validPassword = (password: string) => password.length >= 8 && Buffer.byteLength(password, "utf8") <= 72;
 const getErrorName = (error: unknown): string => error instanceof Error ? error.name : "Error";
+const isLocalDevelopment = () => {
+  if (process.env.NODE_ENV === "production") return false;
+  try {
+    const hostname = new URL(process.env.FRONTEND_URL || "http://localhost:4000").hostname;
+    return ["localhost", "127.0.0.1", "[::1]"].includes(hostname);
+  } catch {
+    return false;
+  }
+};
 export const authValidation = { normalizeEmail, validPassword };
 
 const createVerificationEmail = async (user: IUserDocument) => {
@@ -47,12 +56,13 @@ const createVerificationEmail = async (user: IUserDocument) => {
   user.emailVerificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
   await user.save();
   const url = `${process.env.FRONTEND_URL || "http://localhost:4000"}/verify-email/${token}`;
-  return sendAccountEmail({
+  const sent = await sendAccountEmail({
     to: user.email,
     subject: "Verify your SmartProductivity email",
     text: `Verify your email within 24 hours: ${url}`,
     html: `<p>Verify your SmartProductivity email within 24 hours:</p><p><a href="${url}">Verify email</a></p>`,
   });
+  return { sent, url };
 };
 
 type AuthErrorContext = "register" | "login" | "profile";
@@ -150,7 +160,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     let verificationEmailSent = false;
     try {
-      verificationEmailSent = await createVerificationEmail(user);
+      verificationEmailSent = (await createVerificationEmail(user)).sent;
     } catch (error) {
       console.error(`[auth.verifyEmailSend] ${getErrorName(error)}.`);
     }
@@ -281,7 +291,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     let verificationEmailSent;
     if (emailChanged) {
       try {
-        verificationEmailSent = await createVerificationEmail(updatedUser);
+        verificationEmailSent = (await createVerificationEmail(updatedUser)).sent;
       } catch (emailError) {
         console.error(`[auth.verifyEmailSend] ${getErrorName(emailError)}.`);
         verificationEmailSent = false;
@@ -360,11 +370,17 @@ export const requestEmailVerification = async (req: Request, res: Response) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ success: false, message: "User not found." });
     if (user.emailVerified) return res.json({ success: true, message: "Your email is already verified." });
-    const sent = await createVerificationEmail(user);
+    const { sent, url } = await createVerificationEmail(user);
+    const developmentLink = !sent && isLocalDevelopment() ? url : undefined;
     return res.json({
       success: true,
       emailSent: sent,
-      message: sent ? "Check your inbox for an email verification link." : "Email delivery is not configured yet. Contact support to verify your address.",
+      verificationUrl: developmentLink,
+      message: sent
+        ? "Verification email sent. Check your inbox and spam folder."
+        : developmentLink
+          ? "Email delivery is not configured. Use this local development link to verify your account."
+          : "Email delivery is not configured on this server. Ask the app administrator to configure SMTP_HOST and SMTP_FROM, then try again.",
     });
   } catch (error) {
     console.error(`[auth.requestVerification] ${getErrorName(error)}.`);

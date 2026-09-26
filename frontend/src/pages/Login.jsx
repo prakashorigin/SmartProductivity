@@ -32,7 +32,7 @@ function Login() {
           <img
             src="/SmartProductivity%20logo.png"
             alt="SmartProductivity"
-            className="h-12 w-40 rounded-lg bg-white object-contain"
+            className="h-14 w-44 rounded-lg bg-white object-contain"
           />
         </div>
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-2">
