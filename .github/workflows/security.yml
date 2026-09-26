@@ -1,0 +1,24 @@
+name: Dependency security
+
+on:
+  push:
+    paths: ["frontend/package*.json", "backend/package*.json", ".github/workflows/security.yml"]
+  pull_request:
+    paths: ["frontend/package*.json", "backend/package*.json", ".github/workflows/security.yml"]
+  schedule:
+    - cron: "17 8 * * 1"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Audit backend dependencies
+        working-directory: backend
+        run: npm audit --audit-level=high
+      - name: Audit frontend dependencies
+        working-directory: frontend
+        run: npm audit --audit-level=high

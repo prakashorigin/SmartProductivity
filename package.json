@@ -1,0 +1,31 @@
+{
+    "name": "smart-productivity",
+    "version": "1.0.0",
+    "private": true,
+    "description": "SmartProductivity — plan better, focus deeper, achieve more.",
+    "scripts": {
+        "backend": "npm run dev --prefix backend",
+        "frontend": "npm run dev --prefix frontend",
+        "dev": "concurrently --kill-others --names backend,frontend \"npm run backend\" \"npm run frontend\"",
+        "install:all": "npm install --prefix backend && npm install --prefix frontend",
+        "build": "npm run build --prefix backend && npm run build --prefix frontend",
+        "seed": "npm run seed --prefix backend",
+        "typecheck": "npm run typecheck --prefix backend && npm run typecheck --prefix frontend",
+        "test": "npm run test --prefix backend && npm run test --prefix frontend",
+        "lint": "npm run lint --prefix frontend",
+        "test:frontend": "npm run test --prefix frontend",
+        "test:integration": "npm run build --prefix backend && RUN_INTEGRATION=1 MONGO_URI=mongodb://127.0.0.1:27017/smartproductivity_test JWT_SECRET=smartproductivity-integration-test-secret-only npm run test --prefix backend",
+        "verify": "npm run test && npm run lint && npm run typecheck && npm run build"
+    },
+    "keywords": [
+        "mern",
+        "productivity",
+        "pomodoro",
+        "task-manager"
+    ],
+    "author": "Prakash",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
+}
